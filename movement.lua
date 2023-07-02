@@ -32,12 +32,13 @@ local function correctDirection() -- resets direction
         direction = 4
     end
     direction = direction % 4
+    print("I am currently facing ", direction)
 end
 
 directionCalc()
 
 
---movement section
+--basic movement section
 local function right()
     turtle.turnRight()
     direction = direction + 1
@@ -50,5 +51,19 @@ local function left()
     correctDirection()
 end
 
-print("I am currently facing ", direction)
---functions
+
+--mining sequence
+local currentLocation = vector.new(gps.locate())
+
+while currentLocation.y < 15 do
+    while turtle.detect() == true do
+        turtle.dig()
+    end
+    turtle.forward()
+    turtle.digUp()
+    turtle.digDown()
+    if turtle.detectDown() == false then
+        turtle.placeDown()
+    end
+    local currentLocation = vector.new(gps.locate())
+end

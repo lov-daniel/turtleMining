@@ -1,12 +1,25 @@
 --variable setup
 local direction = 1
 local locationVector = nil
+local dimVector = nil
+local row = 0
+local layerCount = 0
+
+
 --rednet setup (this section sets up the wireless capabilities of the robot)
 rednet.open("left")
 repeat
     local _, message = rednet.receive("locationVector") --receives a message from the pocket computer
     locationVector = message
-until locationVector ~= nil
+until locationVector ~= nil -- will repeat until locationVector is assigned a value
+
+locationVector.y = locationVector.y - 1
+
+repeat
+    local _, message = rednet.receive("dimVector") --receives a message from the pocket computer
+    dimVector = message
+until dimVector ~= nil
+
 
 --calibration sequence (section that setup the robots ability to read cardinal directions)
 local directionChange = {
@@ -33,16 +46,6 @@ local function directionCalc() --calculates the current cardinal direction of th
     end
 end
 
-local function correctDirection() -- resets direction
-    if direction == 0 then
-        direction = 4
-    end
-    if direction == 5 then
-        direction = 1
-    end
-    print("I am currently facing ", direction)
-end
-
 directionCalc()
 
 
@@ -61,7 +64,6 @@ local function left()
     if direction < 1 then
         direction = 4
     end
-    correctDirection()
 end
 
 
@@ -69,10 +71,10 @@ end
 local diffLocation = vector.new(locationVector.x - currentLocation.x, locationVector.y - currentLocation.y, locationVector.z - currentLocation.z)
 
 
-local function calcDiffX()
-    if diffLocation.x > 0 then
+local function calcDiffX() --calculates the difference between the current location and the desired location (x)
+    if diffLocation.x > 0 then 
 
-        while direction ~= 2 do
+        while direction ~= 2 do --turns left until direction is correct (east)
             left()
         end
         while diffLocation.x ~= 0 do
@@ -80,14 +82,14 @@ local function calcDiffX()
                 turtle.dig()
             end
             turtle.forward()
-            currentLocation = vector.new(gps.locate())
+            currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
         end
     end
 
     if diffLocation.x < 0 then
 
-        while direction ~= 4 do
+        while direction ~= 4 do --turns left until direction is correct (west)
             left()
         end
 
@@ -96,38 +98,39 @@ local function calcDiffX()
                 turtle.dig()
             end
             turtle.forward()
-            currentLocation = vector.new(gps.locate())
+            currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
         end
     end
 end
 
-local function calcDiffY()
-    if diffLocation.y > 0 then
-        while diffLocation.y ~= 0 do
+local function calcDiffY() --calculates the difference between the current location and the desired location (y)
+    if diffLocation.y > 0 then --if the target is above ground, then the turtle will begin to move upwards
+        while diffLocation.y ~= 0 do 
             while turtle.detectUp() do
                 turtle.digUp()
             end
             turtle.up()
-            currentLocation = vector.new(gps.locate())
+            currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
         end
     end
 
-    if diffLocation.y < 0 then
+    if diffLocation.y < 0 then --if the target is below ground, then the turtle will begin to move downwards
         while diffLocation.y ~= 0 do
             while turtle.detectDown() do
                 turtle.digDown()
             end
             turtle.down()
-            currentLocation = vector.new(gps.locate())
+            currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
         end
     end
 end
-local function calcDiffZ()
+
+local function calcDiffZ() --calculates the difference between the current location and the desired location (z)
     if diffLocation.z > 0 then
-        while direction ~= 3 do
+        while direction ~= 3 do --turns left until direction is correct (south)
             left()
         end
         while diffLocation.z ~= 0 do
@@ -135,13 +138,13 @@ local function calcDiffZ()
                 turtle.dig()
             end
             turtle.forward()
-            currentLocation = vector.new(gps.locate())
+            currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
         end           
     end
 
     if diffLocation.z < 0 then
-        while direction ~= 1 do
+        while direction ~= 1 do --turns left until direction is correct (north)
             left()
         end
         while diffLocation.z ~= 0 do
@@ -149,18 +152,99 @@ local function calcDiffZ()
                 turtle.dig()
             end
             turtle.forward()
-            currentLocation = vector.new(gps.locate())
+            currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
         end
     end
 end
 
-
-
 while diffLocation ~= vector.new(0, 0, 0) do
     calcDiffX()
     calcDiffY()
     calcDiffZ()
+end
+
+
+--mining calculations
+
+local startingBlock = vector.new(locationVector.x, locationVector.y - 1, locationVector.z)
+local volume = dimVector.x * dimVector.y * dimVector.z
+local finalBlock = vector.new(startingBlock.x - dimVector.x, startingBlock.y - dimVector.y, locationVector.z + locationVector.z)
+
+
+--mining functions
+local function clearLength()
+    print("Clearing a row")
+    for i = 1, dimVector.x - 1, 1 do
+        while turtle.detect() do
+            turtle.dig()
+        end
+        turtle.forward()
+    end
+    row = row + 1
+end
+
+local function depositLayer()
+    if row % 2 == 1 then
+        right()
+        turtle.forward()
+        left()
+        print("Depositing")
+    end
+
+    if row % 2 == 0 then
+        left()
+        turtle.forward()
+        right()
+        print("Depositing")
+    end
+
+    turtle.select(1)
+    turtle.place()
+    turtle.refuel()
+    for i = 1, 16, 1 do
+        turtle.select(i)
+        turtle.drop()
+    end
+    turtle.select(1)
+    turtle.dig()
+end
+
+local function clearLayer()
+    for i = 1, dimVector.z, 1 do
+        clearLength()
+        if row % 2 == 1 then
+            right()
+            while turtle.detect() do
+                turtle.dig()
+            end
+            turtle.forward()
+            right()
+        end
+
+        if row % 2 == 0 then
+            left()
+            while turtle.detect() do
+                turtle.dig()
+            end
+            turtle.forward()
+            left()
+        end
+    end
+            
+    depositLayer()
+    turtle.digDown()
+    turtle.down()
+    layerCount = layerCount + 1
+    print("I am on layer:", layerCount)
+    row = row - 1
+    print("I am on row:", row)
+end
+
+turtle.digDown()
+turtle.down()
+while layerCount ~= dimVector.y do
+    clearLayer()
 end
 
 --[[mining sequence

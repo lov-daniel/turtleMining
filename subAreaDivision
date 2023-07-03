@@ -1,0 +1,11 @@
+print("Length :")
+local length = io.read()
+
+print("Width: ")
+local width = io.read()
+
+print("Height: ")
+local height = io.read()
+
+local totalArea = length * width * height
+

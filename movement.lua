@@ -169,7 +169,12 @@ end
 
 local startingBlock = vector.new(locationVector.x, locationVector.y - 1, locationVector.z)
 local volume = dimVector.x * dimVector.y * dimVector.z
-local finalBlock = vector.new(startingBlock.x - dimVector.x, startingBlock.y - dimVector.y, locationVector.z + locationVector.z)
+local finalBlock = vector.new(startingBlock.x - (dimVector.z - 1), startingBlock.y - dimVector.y, locationVector.z + (dimVector.x - 1))
+
+print(startingBlock)
+print(finalBlock)
+--subarea division tests
+
 
 
 --mining functions
@@ -236,9 +241,7 @@ local function clearLayer()
     turtle.digDown()
     turtle.down()
     layerCount = layerCount + 1
-    print("I am on layer:", layerCount)
     row = row - 1
-    print("I am on row:", row)
 end
 
 turtle.digDown()

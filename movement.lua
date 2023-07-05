@@ -33,7 +33,6 @@ local currentLocation = vector.new(gps.locate())
 while turtle.detect() do
     turtle.dig()
 end
-turtle.forward()
 local newLocation = vector.new(gps.locate())
 
 local vectorDiff = newLocation - currentLocation
@@ -190,14 +189,14 @@ local function clearLength()
 end
 
 local function depositLayer()
-    if row % 2 == 1 then
+    if row % 2 == 0 then
         right()
         turtle.forward()
         left()
         print("Depositing")
     end
 
-    if row % 2 == 0 then
+    if row % 2 == 1 then
         left()
         turtle.forward()
         right()
@@ -218,7 +217,7 @@ end
 local function clearLayer()
     for i = 1, dimVector.z, 1 do
         clearLength()
-        if row % 2 == 1 then
+        if row % 2 == 0 then
             right()
             while turtle.detect() do
                 turtle.dig()
@@ -227,7 +226,7 @@ local function clearLayer()
             right()
         end
 
-        if row % 2 == 0 then
+        if row % 2 == 1 then
             left()
             while turtle.detect() do
                 turtle.dig()

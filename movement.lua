@@ -13,13 +13,14 @@ repeat
     locationVector = message
 until locationVector ~= nil -- will repeat until locationVector is assigned a value
 
-locationVector.y = locationVector.y - 1
+print(locationVector)
 
 repeat
     local _, message = rednet.receive("dimVector") --receives a message from the pocket computer
     dimVector = message
 until dimVector ~= nil
 
+print(dimVector)
 
 --calibration sequence (section that setup the robots ability to read cardinal directions)
 local directionChange = {
@@ -166,21 +167,52 @@ end
 
 --mining calculations
 
-local startingBlock = vector.new(locationVector.x, locationVector.y - 1, locationVector.z)
-local volume = dimVector.x * dimVector.y * dimVector.z
-local finalBlock = vector.new(startingBlock.x - (dimVector.z - 1), startingBlock.y - dimVector.y, locationVector.z + (dimVector.x - 1))
-
+local startingBlock = vector.new(locationVector.x, locationVector.y, locationVector.z)
 print(startingBlock)
+local finalBlock = vector.new(startingBlock.x - (dimVector.z - 1), startingBlock.y - dimVector.y, locationVector.z + (dimVector.x - 1))
 print(finalBlock)
---subarea division tests
 
 
+--check for turtle
+local function inspectBlock()
+    local has_frontBlock, frontBlock = turtle.inspect()
+    if has_frontBlock == false then
+        return
+    end
+
+    if frontBlock.name == "computercraft:turtle_advanced" then
+        print("Turtle in front!")
+        os.sleep(1)
+    end
+
+    local has_upBlock, upBlock = turtle.inspectUp()
+    if has_upBlock == false then
+        return
+    end
+
+    if upBlock.name == "computercraft:turtle_advanced" then
+        print("Turtle above")
+        os.sleep(1)
+    end
+
+
+    local has_downBlock, downBlock = turtle.inspectDown()
+    if has_upBlock == false then
+        return
+    end
+
+    if downBlock.name == "computercraft:turtle_advanced" then
+        print("Turtle below!")
+        os.sleep(1)
+    end
+end
 
 --mining functions
 local function clearLength()
     print("Clearing a row")
     for i = 1, dimVector.x - 1, 1 do
         while turtle.detect() do
+            inspectBlock()
             turtle.dig()
         end
         turtle.forward()
@@ -220,6 +252,7 @@ local function clearLayer()
         if row % 2 == 0 then
             right()
             while turtle.detect() do
+                inspectBlock()
                 turtle.dig()
             end
             turtle.forward()
@@ -229,6 +262,7 @@ local function clearLayer()
         if row % 2 == 1 then
             left()
             while turtle.detect() do
+                inspectBlock()
                 turtle.dig()
             end
             turtle.forward()
@@ -243,26 +277,12 @@ local function clearLayer()
     row = row - 1
 end
 
+
+--exection
 turtle.digDown()
 turtle.down()
 while layerCount ~= dimVector.y do
     clearLayer()
 end
 
---[[mining sequence
-local currentLocation = vector.new(gps.locate())
-
-while currentLocation.y < 15 do
-    while turtle.detect() == true do
-        turtle.dig()
-    end
-    turtle.forward()
-    turtle.digUp()
-    turtle.digDown()
-    if turtle.detectDown() == false then
-        turtle.placeDown()
-    end
-    local currentLocation = vector.new(gps.locate())
-end
-]]--
 

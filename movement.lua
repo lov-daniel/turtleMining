@@ -11,16 +11,12 @@ rednet.open("left")
 repeat
     local _, message = rednet.receive("locationVector") --receives a message from the pocket computer
     locationVector = message
-until locationVector ~= nil -- will repeat until locationVector is assigned a value
-
-print(locationVector)
+until locationVector ~= nil -- will repeat until locationVector is assigned a valuei fe
 
 repeat
     local _, message = rednet.receive("dimVector") --receives a message from the pocket computer
     dimVector = message
 until dimVector ~= nil
-
-print(dimVector)
 
 
 --check for turtle
@@ -67,10 +63,16 @@ local directionChange = {
 }
 
 local currentLocation = vector.new(gps.locate())
+
+print(currentLocation.x, currentLocation.y, currentLocation.z)
+
 while turtle.detect() do
     inspectBlock()
     turtle.dig()
 end
+
+turtle.forward()
+
 local newLocation = vector.new(gps.locate())
 
 local vectorDiff = newLocation - currentLocation
@@ -90,27 +92,29 @@ directionCalc()
 local function right()
     turtle.turnRight()
     direction = direction + 1
-    if direction > 4 then
+    if direction == 5 then
         direction = 1
     end
+    print("I am facing direction:", direction)
 end
 
 local function left()
     turtle.turnLeft()
     direction = direction - 1
-    if direction < 1 then
+    if direction == 0 then
         direction = 4
     end
+    print("I am facing direction:", direction)
 end
 
 
 --movement calculation
 local diffLocation = vector.new(locationVector.x - currentLocation.x, locationVector.y - currentLocation.y, locationVector.z - currentLocation.z)
 
+print(diffLocation.x, diffLocation.y, diffLocation.z)
 
 local function calcDiffX() --calculates the difference between the current location and the desired location (x)
     if diffLocation.x > 0 then 
-
         while direction ~= 2 do --turns left until direction is correct (east)
             left()
         end
@@ -122,6 +126,7 @@ local function calcDiffX() --calculates the difference between the current locat
             turtle.forward()
             currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
+            print(diffLocation.x, diffLocation.y, diffLocation.z)
         end
     end
 
@@ -139,6 +144,7 @@ local function calcDiffX() --calculates the difference between the current locat
             turtle.forward()
             currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
+            print(diffLocation.x, diffLocation.y, diffLocation.z)
         end
     end
 end
@@ -153,6 +159,7 @@ local function calcDiffY() --calculates the difference between the current locat
             turtle.up()
             currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
+            print(diffLocation.x, diffLocation.y, diffLocation.z)
         end
     end
 
@@ -165,6 +172,7 @@ local function calcDiffY() --calculates the difference between the current locat
             turtle.down()
             currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
+            print(diffLocation.x, diffLocation.y, diffLocation.z)
         end
     end
 end
@@ -182,6 +190,7 @@ local function calcDiffZ() --calculates the difference between the current locat
             turtle.forward()
             currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
+            print(diffLocation.x, diffLocation.y, diffLocation.z)
         end           
     end
 
@@ -203,8 +212,8 @@ end
 
 while diffLocation ~= vector.new(0, 0, 0) do
     calcDiffX()
-    calcDiffZ()
     calcDiffY()
+    calcDiffZ()
 end
 
 
@@ -292,5 +301,4 @@ turtle.down()
 while layerCount ~= dimVector.y do
     clearLayer()
 end
-
 

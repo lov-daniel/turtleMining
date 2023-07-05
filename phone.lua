@@ -97,6 +97,9 @@ local function sendSegment(x, y, z, idNum, turtleOrder)
   print("Turtle " .. turtleOrder .. " will mine " .. sizeVector.z .. " blocks.")
 
   rednet.send(idNum, segmentStart, "locationVector")
+
+  print(segmentStart.x, segmentStart.y, segmentStart.z)
+
   rednet.send(idNum, sizeVector, "dimVector")
 end
 

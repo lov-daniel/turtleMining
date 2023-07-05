@@ -68,6 +68,7 @@ local directionChange = {
 
 local currentLocation = vector.new(gps.locate())
 while turtle.detect() do
+    inspectBlock()
     turtle.dig()
 end
 local newLocation = vector.new(gps.locate())
@@ -115,6 +116,7 @@ local function calcDiffX() --calculates the difference between the current locat
         end
         while diffLocation.x ~= 0 do
             while turtle.detect() do
+                inspectBlock()
                 turtle.dig()
             end
             turtle.forward()
@@ -131,6 +133,7 @@ local function calcDiffX() --calculates the difference between the current locat
 
         while diffLocation.x ~= 0 do
             while turtle.detect() do
+                inspectBlock()
                 turtle.dig()
             end
             turtle.forward()
@@ -144,6 +147,7 @@ local function calcDiffY() --calculates the difference between the current locat
     if diffLocation.y > 0 then --if the target is above ground, then the turtle will begin to move upwards
         while diffLocation.y ~= 0 do 
             while turtle.detectUp() do
+                inspectBlock()
                 turtle.digUp()
             end
             turtle.up()
@@ -155,6 +159,7 @@ local function calcDiffY() --calculates the difference between the current locat
     if diffLocation.y < 0 then --if the target is below ground, then the turtle will begin to move downwards
         while diffLocation.y ~= 0 do
             while turtle.detectDown() do
+                inspectBlock()
                 turtle.digDown()
             end
             turtle.down()
@@ -171,6 +176,7 @@ local function calcDiffZ() --calculates the difference between the current locat
         end
         while diffLocation.z ~= 0 do
             while turtle.detect() do
+                inspectBlock()
                 turtle.dig()
             end
             turtle.forward()
@@ -185,6 +191,7 @@ local function calcDiffZ() --calculates the difference between the current locat
         end
         while diffLocation.z ~= 0 do
             while turtle.detect() do
+                inspectBlock()
                 turtle.dig()
             end
             turtle.forward()
@@ -196,8 +203,8 @@ end
 
 while diffLocation ~= vector.new(0, 0, 0) do
     calcDiffX()
-    calcDiffY()
     calcDiffZ()
+    calcDiffY()
 end
 
 

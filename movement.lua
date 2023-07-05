@@ -22,6 +22,42 @@ until dimVector ~= nil
 
 print(dimVector)
 
+
+--check for turtle
+local function inspectBlock()
+    local has_frontBlock, frontBlock = turtle.inspect()
+    if has_frontBlock == false then
+        return
+    end
+
+    if frontBlock.name == "computercraft:turtle_advanced" then
+        print("Turtle in front!")
+        os.sleep(1)
+    end
+
+    local has_upBlock, upBlock = turtle.inspectUp()
+    if has_upBlock == false then
+        return
+    end
+
+    if upBlock.name == "computercraft:turtle_advanced" then
+        print("Turtle above")
+        os.sleep(1)
+    end
+
+
+    local has_downBlock, downBlock = turtle.inspectDown()
+    if has_upBlock == false then
+        return
+    end
+
+    if downBlock.name == "computercraft:turtle_advanced" then
+        print("Turtle below!")
+        os.sleep(1)
+    end
+end
+
+
 --calibration sequence (section that setup the robots ability to read cardinal directions)
 local directionChange = {
     [1] = vector.new(0, 0, -1), -- North
@@ -171,41 +207,6 @@ local startingBlock = vector.new(locationVector.x, locationVector.y, locationVec
 print(startingBlock)
 local finalBlock = vector.new(startingBlock.x - (dimVector.z - 1), startingBlock.y - dimVector.y, locationVector.z + (dimVector.x - 1))
 print(finalBlock)
-
-
---check for turtle
-local function inspectBlock()
-    local has_frontBlock, frontBlock = turtle.inspect()
-    if has_frontBlock == false then
-        return
-    end
-
-    if frontBlock.name == "computercraft:turtle_advanced" then
-        print("Turtle in front!")
-        os.sleep(1)
-    end
-
-    local has_upBlock, upBlock = turtle.inspectUp()
-    if has_upBlock == false then
-        return
-    end
-
-    if upBlock.name == "computercraft:turtle_advanced" then
-        print("Turtle above")
-        os.sleep(1)
-    end
-
-
-    local has_downBlock, downBlock = turtle.inspectDown()
-    if has_upBlock == false then
-        return
-    end
-
-    if downBlock.name == "computercraft:turtle_advanced" then
-        print("Turtle below!")
-        os.sleep(1)
-    end
-end
 
 --mining functions
 local function clearLength()

@@ -95,7 +95,6 @@ local function right()
     if direction == 5 then
         direction = 1
     end
-    print("I am facing direction:", direction)
 end
 
 local function left()
@@ -104,7 +103,6 @@ local function left()
     if direction == 0 then
         direction = 4
     end
-    print("I am facing direction:", direction)
 end
 
 
@@ -126,7 +124,6 @@ local function calcDiffX() --calculates the difference between the current locat
             turtle.forward()
             currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
-            print(diffLocation.x, diffLocation.y, diffLocation.z)
         end
     end
 
@@ -144,7 +141,6 @@ local function calcDiffX() --calculates the difference between the current locat
             turtle.forward()
             currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
-            print(diffLocation.x, diffLocation.y, diffLocation.z)
         end
     end
 end
@@ -159,7 +155,6 @@ local function calcDiffY() --calculates the difference between the current locat
             turtle.up()
             currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
-            print(diffLocation.x, diffLocation.y, diffLocation.z)
         end
     end
 
@@ -172,7 +167,6 @@ local function calcDiffY() --calculates the difference between the current locat
             turtle.down()
             currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
-            print(diffLocation.x, diffLocation.y, diffLocation.z)
         end
     end
 end
@@ -190,7 +184,6 @@ local function calcDiffZ() --calculates the difference between the current locat
             turtle.forward()
             currentLocation = vector.new(gps.locate()) --constantly updates the current location once a cycle has completed
             diffLocation = locationVector - currentLocation
-            print(diffLocation.x, diffLocation.y, diffLocation.z)
         end           
     end
 
@@ -216,13 +209,6 @@ while diffLocation ~= vector.new(0, 0, 0) do
     calcDiffZ()
 end
 
-
---mining calculations
-
-local startingBlock = vector.new(locationVector.x, locationVector.y, locationVector.z)
-print(startingBlock)
-local finalBlock = vector.new(startingBlock.x - (dimVector.z - 1), startingBlock.y - dimVector.y, locationVector.z + (dimVector.x - 1))
-print(finalBlock)
 
 --mining functions
 local function clearLength()
@@ -286,7 +272,7 @@ local function clearLayer()
             left()
         end
     end
-            
+    os.sleep(3)
     depositLayer()
     turtle.digDown()
     turtle.down()
